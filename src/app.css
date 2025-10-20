@@ -12,20 +12,6 @@
 	font-size: 16px;
 }
 
-input {
-	font-family: monospace;
-	color: #acb1bd;
-	background-color: transparent;
-	border: none;
-	outline: none;
-	font-size: 16px;
-	padding: 0px;
-	margin: 0px;
-	display: inline;
-
-	flex-grow: 1;
-}
-
 a {
 	color: #6fb3bf;
 }

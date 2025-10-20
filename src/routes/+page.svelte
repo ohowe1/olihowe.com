@@ -25,7 +25,7 @@
 		// reset command history on mount to let the typewriter do its thing
 		commandHistory = [];
 
-		const commandsToRun = ['echo $USER', 'cat description.txt', 'echo $GITHUB'];
+		const commandsToRun = ['echo $NAME', 'cat description.txt', 'echo $GITHUB', 'echo $LINKEDIN'];
 
 		const sleepIfNotFast = async (ms: number) => {
 			if (!goFast) {
@@ -87,13 +87,9 @@
 		}
 	};
 
-	const handlePageShow = (event: PageTransitionEvent) => {
-		console.log('show!');
-		console.log(event);
-	};
 </script>
 
-<svelte:window onkeydown={handleKeyDown} onpageshow={handlePageShow} />
+<svelte:window onkeydown={handleKeyDown}/>
 
 <main>
 	{#each commandHistory as entry}
@@ -114,7 +110,7 @@
 	>
 		<CommandLine timestamp={currentTime}>
 			<input
-				name="command-input"
+				id="command-input"
 				type="text"
 				placeholder={!inputDisabled && !firstRan ? 'Type command here. help for help' : undefined}
 				disabled={inputDisabled}
@@ -124,3 +120,18 @@
 		</CommandLine>
 	</form>
 </main>
+
+<style>
+	#command-input {
+		font-family: monospace;
+		color: #acb1bd;
+		background-color: transparent;
+		border: none;
+		outline: none;
+		font-size: 16px;
+		padding: 0px;
+		margin: 0px;
+		display: inline;
+		width: 100%;
+	}
+</style>
