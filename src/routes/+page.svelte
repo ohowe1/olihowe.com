@@ -107,6 +107,7 @@
 			e.preventDefault();
 			executeAndResetCommand(true);
 		}}
+		data-umami-event="command"
 	>
 		<CommandLine timestamp={currentTime}>
 			<input
