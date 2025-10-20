@@ -50,15 +50,15 @@
 		const result = executeCommand(commandInput, currentTime, systemState);
 		commandHistory.push(result);
 
-		// @ts-ignore
-		if (window.umami) {
-			// @ts-ignore
-			window.umami.track('command', { command: commandInput });
-		}
-
 		commandInput = '';
 		if (userRan) {
 			firstRan = true;
+
+			// @ts-ignore
+			if (window.umami) {
+				// @ts-ignore
+				window.umami.track('command', { command: commandInput });
+			}
 		}
 		// Update current directory in case it changed
 		currentDirectory = currentDirectoryPath(systemState, true);
@@ -92,10 +92,9 @@
 			commandInput += event.key;
 		}
 	};
-
 </script>
 
-<svelte:window onkeydown={handleKeyDown}/>
+<svelte:window onkeydown={handleKeyDown} />
 
 <main>
 	{#each commandHistory as entry}
