@@ -1,0 +1,43 @@
+:root {
+	font-family: monospace;
+
+	color: #acb1bd;
+	background-color: #21242a;
+
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+
+	font-size: 16px;
+}
+
+input {
+	font-family: monospace;
+	color: #acb1bd;
+	background-color: transparent;
+	border: none;
+	outline: none;
+	font-size: 16px;
+	padding: 0px;
+	margin: 0px;
+	display: inline;
+
+	flex-grow: 1;
+}
+
+a {
+	color: #6fb3bf;
+}
+
+.magenta {
+	color: #bb7bd7;
+}
+
+.cyan {
+	color: #6fb3bf;
+}
+
+.green {
+	color: #a0c180;
+}
