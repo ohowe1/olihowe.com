@@ -96,6 +96,11 @@
 
 <svelte:window onkeydown={handleKeyDown} />
 
+<svelte:head>
+	<title>Oliver Howe</title>
+	<meta name="description" content="Portfolio website for Oliver Howe, a computer engineering student at Harvey Mudd College" />
+</svelte:head>
+
 <main>
 	{#each commandHistory as entry}
 		<CommandEntry
