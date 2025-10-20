@@ -50,6 +50,12 @@
 		const result = executeCommand(commandInput, currentTime, systemState);
 		commandHistory.push(result);
 
+		// @ts-ignore
+		if (window.umami) {
+			// @ts-ignore
+			window.umami.track('command', { command: commandInput });
+		}
+
 		commandInput = '';
 		if (userRan) {
 			firstRan = true;
@@ -107,7 +113,6 @@
 			e.preventDefault();
 			executeAndResetCommand(true);
 		}}
-		data-umami-event="command"
 	>
 		<CommandLine timestamp={currentTime}>
 			<input
