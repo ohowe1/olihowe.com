@@ -22,6 +22,10 @@ function rm(args: string[], systemState: SystemState): string {
 		args.shift();
 	}
 
+	if (args.length === 0) {
+		return 'rm: missing argument';
+	}
+
 	const target = args[0];
 
 	let fileNode = resolvePath(target, systemState);
@@ -30,14 +34,14 @@ function rm(args: string[], systemState: SystemState): string {
 		return `rm: no such file or directory: ${target}`;
 	}
 
+	if (fileNode.type === 'root') {
+		return `rm: cannot remove root directory`;
+	}
 	if (removingFile && fileNode.type !== 'file') {
 		return `rm: '${target}': is a directory`;
 	}
 	if (!removingFile && fileNode.type !== 'directory') {
 		return `rm: not a directory: ${target}`;
-	}
-	if (fileNode.type === 'root') {
-		return `rm: cannot remove root directory`;
 	}
 
 	const parent = fileNode.parent;
