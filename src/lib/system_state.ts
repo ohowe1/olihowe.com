@@ -116,8 +116,9 @@ export function makeInitialSystemState(): SystemState {
 			HOME: { value: '/home/oli', mutable: false },
 			SHELL: { value: '/bin/oli-shell', mutable: false },
 			NAME: { value: 'Oliver Howe', mutable: true },
+			HOMEPAGE: { value: '<a href="https://olihowe.com">https://olihowe.com</a>', mutable: true },
 			WEBSITE: { value: '<a href="https://olihowe.com">https://olihowe.com</a>', mutable: true },
-			EMAIL: { value: '<a href="mailto:oliver@olihowe.com">oliver@olihowe.com</a>', mutable: true },
+			EMAIL: { value: 'oliver @ this domain', mutable: true },
 			GITHUB: {
 				value: '<a href="https://github.com/ohowe1">https://github.com/ohowe1</a>',
 				mutable: true
