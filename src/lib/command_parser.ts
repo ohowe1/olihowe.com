@@ -6,6 +6,7 @@ import cat from './commands/cat';
 import { type SystemState } from './system_state';
 import { currentDirectoryPath } from './system_state_util';
 import rm from './commands/rm';
+import mkdir from './commands/mkdir';
 
 type Command = {
 	execute: (args: string[], systemState: SystemState) => string;
@@ -41,7 +42,8 @@ const commands: Record<string, Command> = {
 	pwd,
 	ls,
 	cat,
-	rm
+	rm,
+	mkdir
 };
 
 function runCommand(commandName: string, args: string[], systemState: SystemState): string {

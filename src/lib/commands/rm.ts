@@ -41,11 +41,11 @@ function rm(args: string[], systemState: SystemState): string {
 	}
 
 	const parent = fileNode.parent;
-
+	// remove from parent's children
 	parent.children = parent.children.filter((child: FileSystemNode) => child.name !== fileNode.name);
 
 	// if we removed the current directory, move to parent
-	if (getFileNode(systemState.currentDirectory, systemState) === fileNode) {
+	if (!getFileNode(systemState.currentDirectory, systemState)) {
 		systemState.currentDirectory = getFilePath(parent);
 	}
 
@@ -53,6 +53,6 @@ function rm(args: string[], systemState: SystemState): string {
 }
 
 export default {
-	description: 'Remove a file.',
+	description: 'Remove a file or directory.',
 	execute: rm
 };

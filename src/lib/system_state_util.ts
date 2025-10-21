@@ -1,9 +1,12 @@
 import type { FileSystemNode, SystemState } from './system_state';
 
 export function resolvePath(path: string, systemState: SystemState): FileSystemNode | null {
-	const elements = path.split('/');
-
 	let currentDirectory = systemState.currentDirectory.slice();
+	if (path === '') {
+		return getFileNode(currentDirectory, systemState);
+	}
+
+	const elements = path.split('/');
 	if (elements[0] === '~') {
 		currentDirectory = systemState.homeDirectory.slice();
 		elements.shift();
