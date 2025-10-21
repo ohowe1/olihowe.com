@@ -6,7 +6,7 @@
 
 	let pageUrl = 'https://olihowe.com/404';
 	// In the case that they have noscript, it will use the prerendered URL so switch that
-	if (building) {
+	if (!building) {
 		pageUrl = page.url.href;
 	}
 
