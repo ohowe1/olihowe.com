@@ -8,18 +8,20 @@
 		initialCommands?: InitialCommand[];
 	};
 
-	let {
-		initialCommands = [],
-	}: ShellPageProps = $props();
+	let { initialCommands = [] }: ShellPageProps = $props();
 </script>
 
 <noscript>
-  <ShellContent {initialCommands} instantInitialCommands={true} commandHint="Please enable JavaScript to get this site to work" />
-  <style>
-    .script-content {
-      display: none;
-    }
-  </style>
+	<ShellContent
+		{initialCommands}
+		instantInitialCommands={true}
+		commandHint="Please enable JavaScript to get this site to work"
+	/>
+	<style>
+		.script-content {
+			display: none;
+		}
+	</style>
 </noscript>
 
 <div class="script-content">

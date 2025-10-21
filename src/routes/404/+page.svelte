@@ -2,14 +2,18 @@
 	import ShellPage from '$lib/components/shell_page.svelte';
 	import { page } from '$app/state';
 	import type { InitialCommand } from '$lib/components/shell_content.svelte';
+	import { building } from '$app/environment';
 
-	let pageUrl = page.url.href;
+	let pageUrl = 'https://olihowe.com/404';
 	// In the case that they have noscript, it will use the prerendered URL so switch that
-	if (pageUrl === "http://sveltekit-prerender/404") {
-		pageUrl = "https://olihowe.com/404";
+	if (building) {
+		pageUrl = page.url.href;
 	}
 
-	const initialCommands: InitialCommand[] = [{command: `curl -I ${pageUrl}`, forcedResult: "HTTP/2 404: Page Not Found"}, {command: 'echo $HOMEPAGE'}];
+	const initialCommands: InitialCommand[] = [
+		{ command: `curl -I ${pageUrl}`, forcedResult: 'HTTP/2 404: Page Not Found' },
+		{ command: 'echo $HOMEPAGE' }
+	];
 </script>
 
 <svelte:head>

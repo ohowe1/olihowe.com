@@ -8,17 +8,13 @@ function mkdir(args: string[], systemState: SystemState): string {
 
 	const target = args[0];
 
-  const newDirectoryName = target.split('/').pop();
-  if (!newDirectoryName) {
-    return `mkdir: invalid directory name: ${target}`;
-  }
+	const newDirectoryName = target.split('/').pop();
+	if (!newDirectoryName) {
+		return `mkdir: invalid directory name: ${target}`;
+	}
 
-  const parentPath = target.substring(0, target.length - newDirectoryName.length);
-  console.log(newDirectoryName)
-  console.log('Parent path:', parentPath);
-
+	const parentPath = target.substring(0, target.length - newDirectoryName.length);
 	const parentNode = resolvePath(parentPath, systemState);
-  console.log(parentNode)
 
 	if (!parentNode) {
 		return `mkdir: no such file or directory: ${parentPath}`;
@@ -28,21 +24,21 @@ function mkdir(args: string[], systemState: SystemState): string {
 		return `mkdir: not a directory: ${parentPath}`;
 	}
 
-  const existingNode = parentNode.children.find((child) => child.name === newDirectoryName);
-  if (existingNode) {
-    return `mkdir: ${target}: file exists`;
-  }
-  
-  const newFileNode = {
-    name: newDirectoryName,
-    type: 'directory' as const,
-    children: [],
-    parent: parentNode,
-  };
+	const existingNode = parentNode.children.find((child) => child.name === newDirectoryName);
+	if (existingNode) {
+		return `mkdir: ${target}: file exists`;
+	}
 
-  parentNode.children.push(newFileNode);
+	const newFileNode = {
+		name: newDirectoryName,
+		type: 'directory' as const,
+		children: [],
+		parent: parentNode
+	};
 
-	return "";
+	parentNode.children.push(newFileNode);
+
+	return '';
 }
 
 export default {

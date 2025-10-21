@@ -7,10 +7,10 @@
 	import CommandEntry from '$lib/components/command_entry.svelte';
 	import CommandLine from '$lib/components/command_line.svelte';
 
-  export type InitialCommand = {
-    command: string;
-    forcedResult?: string;
-  };
+	export type InitialCommand = {
+		command: string;
+		forcedResult?: string;
+	};
 
 	type ShellContentProps = {
 		/**
@@ -18,10 +18,10 @@
 		 */
 		initialCommands?: InitialCommand[];
 
-    /**
-     * Whether to instantly run initial commands without typing animation and just have them in the DOM
-     */
-    instantInitialCommands?: boolean;
+		/**
+		 * Whether to instantly run initial commands without typing animation and just have them in the DOM
+		 */
+		instantInitialCommands?: boolean;
 
 		/**
 		 * Delay between each character when typing (ms)
@@ -38,11 +38,11 @@
 		 */
 		executeDelay?: number;
 
-    /**
-     * Placeholder text for the command input when it's enabled and no command has been run yet
-     */
-    commandHint?: string;
-	}
+		/**
+		 * Placeholder text for the command input when it's enabled and no command has been run yet
+		 */
+		commandHint?: string;
+	};
 
 	let {
 		initialCommands = [],
@@ -50,7 +50,7 @@
 		commandDelay = 500,
 		executeDelay = 300,
 		instantInitialCommands = false,
-    commandHint = 'Type command here. help for help'
+		commandHint = 'Type command here. help for help'
 	}: ShellContentProps = $props();
 
 	let commandInput: string = $state('');
@@ -60,36 +60,41 @@
 	let userRanCommand: boolean = $state(false);
 	let skipTyping = false;
 
-  const executeCommandAndUpdateState = (command: string) => {
-    const result = executeCommand(command, currentTime, systemState);
-    // Update current directory in case it changed
-    currentDirectory = currentDirectoryPath(systemState, true);
-    currentTime = new Date();
-    return result;
-  };
+	const executeCommandAndUpdateState = (command: string) => {
+		const result = executeCommand(command, currentTime, systemState);
+		// Update current directory in case it changed
+		currentDirectory = currentDirectoryPath(systemState, true);
+		currentTime = new Date();
+		return result;
+	};
 
 	const systemState = makeInitialSystemState();
 	let currentDirectory = $state(currentDirectoryPath(systemState, true));
 	let currentTime = $state(new Date());
-	let commandHistory = $state<CommandHistoryEntry[]>(instantInitialCommands ? initialCommands.map(cmd => {
-    const result = cmd.forcedResult !== undefined
-      ? {
-          command: cmd.command,
-          directory: currentDirectory,
-          output: cmd.forcedResult,
-          timestamp: new Date()
-        }
-      : executeCommandAndUpdateState(cmd.command);
-    return result;
-  }) : []);
+	let commandHistory = $state<CommandHistoryEntry[]>(
+		instantInitialCommands
+			? initialCommands.map((cmd) => {
+					const result =
+						cmd.forcedResult !== undefined
+							? {
+									command: cmd.command,
+									directory: currentDirectory,
+									output: cmd.forcedResult,
+									timestamp: new Date()
+								}
+							: executeCommandAndUpdateState(cmd.command);
+					return result;
+				})
+			: []
+	);
 
 	const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 	onMount(async () => {
-    if (instantInitialCommands) {
-      inputDisabled = false;
-      return;
-    }
+		if (instantInitialCommands) {
+			inputDisabled = false;
+			return;
+		}
 		// reset command history on mount to let the typewriter do its thing
 		commandHistory = [];
 
@@ -107,18 +112,19 @@
 			}
 			await sleepIfNotSkipping(executeDelay);
 
-      const result = cmd.forcedResult !== undefined
-        ? {
-            command: cmd.command,
-            directory: currentDirectory,
-            output: cmd.forcedResult,
-            timestamp: new Date()
-          }
-        : executeCommandAndUpdateState(commandInput);
+			const result =
+				cmd.forcedResult !== undefined
+					? {
+							command: cmd.command,
+							directory: currentDirectory,
+							output: cmd.forcedResult,
+							timestamp: new Date()
+						}
+					: executeCommandAndUpdateState(commandInput);
 
-      commandInput = '';
-      commandHistory.push(result);
-		  tick().then(() => window.scrollTo(0, document.body.scrollHeight));
+			commandInput = '';
+			commandHistory.push(result);
+			tick().then(() => window.scrollTo(0, document.body.scrollHeight));
 		}
 
 		inputDisabled = false;
