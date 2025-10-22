@@ -134,7 +134,6 @@
 		const result = executeCommandAndUpdateState(commandInput);
 		commandHistory.push(result);
 
-		commandInput = '';
 		if (userRan) {
 			userRanCommand = true;
 
@@ -144,6 +143,7 @@
 				window.umami.track('command', { command: commandInput });
 			}
 		}
+		commandInput = '';
 
 		tick().then(() => window.scrollTo(0, document.body.scrollHeight));
 	};

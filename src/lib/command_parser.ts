@@ -29,9 +29,9 @@ const commands: Record<string, Command> = {
 	},
 	help: {
 		description: 'List available commands.',
-		execute: (args: string[], systemState: SystemState): string => {
+		execute: (_args: string[], _systemState: SystemState): string => {
 			const commandList = Object.entries(commands)
-				.filter(([name, cmd]) => !cmd.hide)
+				.filter(([, cmd]) => !cmd.hide)
 				.map(([name, cmd]) => `${name}: ${cmd.description}`)
 				.join('\n');
 			return `Available commands:\n${commandList}`;
