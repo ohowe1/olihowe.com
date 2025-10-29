@@ -1,0 +1,4 @@
+- [ ] Add more content
+- [ ] Fix some of the tab completion like rm with an argument
+- [ ] Echo tab completion for env variables?
+- [ ] More commands

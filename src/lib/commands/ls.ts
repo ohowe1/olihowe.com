@@ -1,5 +1,5 @@
 import { type SystemState } from '../system_state';
-import { getFileNode } from '../system_state_util';
+import { getFileNode, oneArgDirectoryCompletions } from '../system_state_util';
 
 function ls(args: string[], systemState: SystemState): string {
 	const currentDir = systemState.currentDirectory;
@@ -14,5 +14,6 @@ function ls(args: string[], systemState: SystemState): string {
 
 export default {
 	description: 'List directory contents.',
-	execute: ls
+	execute: ls,
+	completions: oneArgDirectoryCompletions
 };

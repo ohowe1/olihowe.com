@@ -1,5 +1,10 @@
 import type { FileSystemNode, SystemState } from '$lib/system_state';
-import { getFileNode, getFilePath, resolvePath } from '$lib/system_state_util';
+import {
+	getFileNode,
+	getFilePath,
+	oneArgFileCompletions,
+	resolvePath
+} from '$lib/system_state_util';
 
 function rm(args: string[], systemState: SystemState): string {
 	if (args.length === 0) {
@@ -58,5 +63,6 @@ function rm(args: string[], systemState: SystemState): string {
 
 export default {
 	description: 'Remove a file or directory.',
-	execute: rm
+	execute: rm,
+	completions: oneArgFileCompletions
 };

@@ -71,3 +71,56 @@ export function currentDirectoryPath(systemState: SystemState, replaceHome?: boo
 	}
 	return '/' + systemState.currentDirectory.join('/');
 }
+
+export function fileCompletions(
+	pathPrefix: string,
+	systemState: SystemState,
+	excludeFiles?: boolean
+): string[] {
+	const prefixIndex = pathPrefix.lastIndexOf('/');
+
+	const prefix = prefixIndex === -1 ? pathPrefix : pathPrefix.substring(prefixIndex + 1);
+	const dirPath = prefixIndex === -1 ? '' : pathPrefix.substring(0, prefixIndex + 1);
+
+	const dirNode = resolvePath(dirPath, systemState);
+	if (!dirNode || dirNode.type === 'file') {
+		return [];
+	}
+
+	const candidates = dirNode.children
+		.filter((child) => child.name.startsWith(prefix) && (!excludeFiles || child.type !== 'file'))
+		.map((child) => dirPath + child.name + (child.type !== 'file' ? '/' : ''));
+
+	candidates.sort();
+	return candidates;
+}
+
+export function oneArgFileCompletions(
+	args: string[],
+	lastArgComplete: boolean,
+	systemState: SystemState
+): string[] {
+	// Only complete the first argument
+	if (args.length === 0 || (args.length === 1 && !lastArgComplete)) {
+		const argPartial = lastArgComplete || args.length === 0 ? '' : args[0];
+
+		return fileCompletions(argPartial, systemState);
+	}
+
+	return [];
+}
+
+export function oneArgDirectoryCompletions(
+	args: string[],
+	lastArgComplete: boolean,
+	systemState: SystemState
+): string[] {
+	// Only complete the first argument
+	if (args.length === 0 || (args.length === 1 && !lastArgComplete)) {
+		const argPartial = lastArgComplete || args.length === 0 ? '' : args[0];
+
+		return fileCompletions(argPartial, systemState, true);
+	}
+
+	return [];
+}

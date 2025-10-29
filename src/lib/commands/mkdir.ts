@@ -1,5 +1,5 @@
 import { type SystemState } from '../system_state';
-import { resolvePath } from '../system_state_util';
+import { fileCompletions, oneArgDirectoryCompletions, resolvePath } from '../system_state_util';
 
 function mkdir(args: string[], systemState: SystemState): string {
 	if (args.length === 0) {
@@ -43,5 +43,6 @@ function mkdir(args: string[], systemState: SystemState): string {
 
 export default {
 	description: 'Create a new directory.',
-	execute: mkdir
+	execute: mkdir,
+	completions: oneArgDirectoryCompletions
 };

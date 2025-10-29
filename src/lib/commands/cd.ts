@@ -1,5 +1,10 @@
 import { type SystemState } from '../system_state';
-import { getFileNode, getFilePath, resolvePath } from '../system_state_util';
+import {
+	getFileNode,
+	getFilePath,
+	oneArgDirectoryCompletions,
+	resolvePath
+} from '../system_state_util';
 
 function cd(args: string[], systemState: SystemState): string {
 	if (args.length === 0) {
@@ -25,5 +30,6 @@ function cd(args: string[], systemState: SystemState): string {
 
 export default {
 	description: "Set the shell's current directory.",
-	execute: cd
+	execute: cd,
+	completions: oneArgDirectoryCompletions
 };

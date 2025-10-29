@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { makeInitialSystemState } from '$lib/system_state';
-	import { type CommandHistoryEntry, executeCommand } from '$lib/command_parser';
+	import {
+		type CommandHistoryEntry,
+		executeCommand,
+		getCommandCompletions
+	} from '$lib/command_parser';
 	import CommandHeader from '$lib/components/command_header.svelte';
 	import { currentDirectoryPath } from '$lib/system_state_util';
 	import { onMount, tick } from 'svelte';
@@ -55,6 +59,9 @@
 
 	let commandInput: string = $state('');
 	let inputElement: HTMLInputElement;
+
+	let currentCompletions: string[] | null = null;
+	let completionsIndex: number = 0;
 
 	let inputDisabled: boolean = $state(instantInitialCommands ? false : true);
 	let userRanCommand: boolean = $state(false);
@@ -144,8 +151,14 @@
 			}
 		}
 		commandInput = '';
+		resetCompletions();
 
 		tick().then(() => window.scrollTo(0, document.body.scrollHeight));
+	};
+
+	const resetCompletions = () => {
+		currentCompletions = null;
+		completionsIndex = 0;
 	};
 
 	const handleKeyDown = (event: KeyboardEvent) => {
@@ -156,10 +169,27 @@
 			}
 			return;
 		}
-		if (document.activeElement === inputElement) {
+		if (event.ctrlKey || event.metaKey || event.altKey) {
 			return;
 		}
-		if (event.ctrlKey || event.metaKey || event.altKey) {
+
+		// the only key that is valid both when the input is focused and not is Tab
+		if (event.key === 'Tab') {
+			event.preventDefault();
+
+			if (currentCompletions === null) {
+				currentCompletions = getCommandCompletions(commandInput, systemState);
+				completionsIndex = 0;
+			} else {
+				completionsIndex = (completionsIndex + 1) % currentCompletions.length;
+			}
+
+			if (currentCompletions.length > completionsIndex) {
+				commandInput = currentCompletions[completionsIndex];
+			}
+		}
+
+		if (document.activeElement === inputElement) {
 			return;
 		}
 		if (event.key === 'Enter' && !event.shiftKey) {
@@ -171,6 +201,8 @@
 			event.preventDefault();
 			inputElement.focus();
 			commandInput += event.key;
+
+			resetCompletions();
 		}
 	};
 </script>
@@ -202,6 +234,7 @@
 				disabled={inputDisabled}
 				bind:value={commandInput}
 				bind:this={inputElement}
+				oninput={resetCompletions}
 			/>
 		</CommandLine>
 	</form>

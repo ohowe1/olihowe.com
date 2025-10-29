@@ -1,5 +1,5 @@
 import { type SystemState } from '../system_state';
-import { resolvePath } from '../system_state_util';
+import { fileCompletions, oneArgFileCompletions, resolvePath } from '../system_state_util';
 
 function cat(args: string[], systemState: SystemState): string {
 	if (args.length === 0) {
@@ -23,5 +23,6 @@ function cat(args: string[], systemState: SystemState): string {
 
 export default {
 	description: 'Display the contents of a file.',
-	execute: cat
+	execute: cat,
+	completions: oneArgFileCompletions
 };

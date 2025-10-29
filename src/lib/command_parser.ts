@@ -10,6 +10,7 @@ import mkdir from './commands/mkdir';
 
 type Command = {
 	execute: (args: string[], systemState: SystemState) => string;
+	completions?: (args: string[], lastArgComplete: boolean, systemState: SystemState) => string[];
 	description: string;
 	hide?: boolean;
 };
@@ -53,6 +54,41 @@ function runCommand(commandName: string, args: string[], systemState: SystemStat
 	}
 
 	return command.execute(args, systemState);
+}
+
+export function getCommandCompletions(input: string, systemState: SystemState): string[] {
+	const tokens = input.trim().split(' ');
+	const lastTokenComplete = input.endsWith(' ');
+	const commandName = tokens[0];
+	const args = tokens.slice(1);
+
+	if (tokens.length === 1 && !lastTokenComplete) {
+		// Suggest command names
+		let result = Object.keys(commands).filter(
+			(cmd) => !commands[cmd].hide && cmd.startsWith(commandName)
+		);
+		result.sort();
+
+		return result;
+	} else {
+		// Suggest arguments for the specific command
+		const command = commands[commandName];
+		if (command && command.completions) {
+			const commandResults = command.completions(
+				args,
+				lastTokenComplete && tokens.length > 1,
+				systemState
+			);
+
+			for (let i = 0; i < commandResults.length; i++) {
+				commandResults[i] = commandName + ' ' + commandResults[i];
+			}
+
+			return commandResults;
+		}
+	}
+
+	return [];
 }
 
 export function executeCommand(

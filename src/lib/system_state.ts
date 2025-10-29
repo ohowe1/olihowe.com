@@ -89,6 +89,12 @@ export function makeInitialSystemState(): SystemState {
 											'I am currently studying engineering at Harvey Mudd College and expecting to graduate in 2028. This past summer, I was an intern at NASA Jet Propulsion Laboratory in Pasadena CA in the RF Electronics Group working on radar hardware test automation.'
 									},
 									{
+										name: 'change_log.txt',
+										type: 'file',
+										content:
+											"I recently added tab completion to the shell (activate by pressing Tab). \n\nFor the future, I really need to add more content/project descriptions/photos etc. I\'m also interested to add more commands and flesh out the tab completion more."
+									},
+									{
 										name: 'projects',
 										type: 'directory',
 										children: [
