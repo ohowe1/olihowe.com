@@ -111,6 +111,10 @@ function splitIntoCommandTokens(input: string): string[][] {
 				currentToken = '';
 			}
 		} else if (char === ';' && !inQuotes) {
+			if (currentToken.length > 0) {
+				currentCommand.push(currentToken);
+				currentToken = '';
+			}
 			if (currentCommand.length > 0) {
 				splitCommands.push(currentCommand);
 				currentCommand = [];
