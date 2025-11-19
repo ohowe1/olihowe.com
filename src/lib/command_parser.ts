@@ -189,7 +189,7 @@ function parseCommandTokens(tokens: string[], system_state: SystemState): Comman
 	for (let i = 1; i < tokens.length; i++) {
 		if (tokens[i] == '>' || tokens[i] == '>>') {
 			if (i + 1 >= tokens.length) {
-				throw new Error('No filename specified for output redirection');
+				throw new Error('syntax error near unexpected token `newline`');
 			}
 			const filename = expandToken(tokens[i + 1], system_state);
 
