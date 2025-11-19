@@ -33,7 +33,7 @@ function touch(args: string[], systemState: SystemState): string {
 		name: newFileName,
 		type: 'file' as const,
 		children: [],
-    content: '',
+		content: '',
 		parent: parentNode
 	};
 

@@ -1,4 +1,4 @@
-import root from "./file_system/index";
+import root from './file_system/index';
 
 export type FileNode = {
 	name: string;
@@ -71,10 +71,7 @@ function makeInitialFileSystem(
 
 export function makeInitialSystemState(): SystemState {
 	return {
-		fileSystem: makeInitialFileSystem(
-			root,
-			null
-		),
+		fileSystem: makeInitialFileSystem(root, null),
 		currentDirectory: ['home', 'oli'],
 		homeDirectory: ['home', 'oli'],
 
