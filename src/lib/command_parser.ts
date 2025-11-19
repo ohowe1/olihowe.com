@@ -4,15 +4,27 @@ import pwd from './commands/pwd';
 import ls from './commands/ls';
 import cat from './commands/cat';
 import { type SystemState } from './system_state';
-import { currentDirectoryPath } from './system_state_util';
+import { currentDirectoryPath, resolvePath } from './system_state_util';
 import rm from './commands/rm';
 import mkdir from './commands/mkdir';
+import touch from './commands/touch';
 
 type Command = {
 	execute: (args: string[], systemState: SystemState) => string;
 	completions?: (args: string[], lastArgComplete: boolean, systemState: SystemState) => string[];
 	description: string;
 	hide?: boolean;
+};
+
+type FileRedirection = {
+	type: 'overwrite' | 'append';
+	filename: string;
+};
+
+type CommandParserCommand = {
+	commandName: string;
+	args: string[];
+	fileRedirections: FileRedirection[];
 };
 
 export type CommandHistoryEntry = {
@@ -44,17 +56,9 @@ const commands: Record<string, Command> = {
 	ls,
 	cat,
 	rm,
-	mkdir
+	mkdir,
+	touch
 };
-
-function runCommand(commandName: string, args: string[], systemState: SystemState): string {
-	const command = commands[commandName];
-	if (!command) {
-		return `oli-shell: command not found: ${commandName}`;
-	}
-
-	return command.execute(args, systemState);
-}
 
 export function getCommandCompletions(input: string, systemState: SystemState): string[] {
 	const tokens = input.trim().split(' ');
@@ -91,6 +95,169 @@ export function getCommandCompletions(input: string, systemState: SystemState): 
 	return [];
 }
 
+function splitIntoCommandTokens(input: string): string[][] {
+	const splitCommands = [];
+	let currentCommand = [];
+	let currentToken = '';
+	let inQuotes = false;
+
+	for (let i = 0; i < input.length; i++) {
+		const char = input[i];
+		if (char === '"') {
+			inQuotes = !inQuotes;
+		} else if (char === ' ' && !inQuotes) {
+			if (currentToken.length > 0) {
+				currentCommand.push(currentToken);
+				currentToken = '';
+			}
+		} else if (char === ';' && !inQuotes) {
+			if (currentCommand.length > 0) {
+				splitCommands.push(currentCommand);
+				currentCommand = [];
+			}
+		} else {
+			currentToken += char;
+		}
+	}
+	if (currentToken.length > 0) {
+		currentCommand.push(currentToken);
+	}
+
+	if (currentCommand.length > 0) {
+		splitCommands.push(currentCommand);
+	}
+
+	return splitCommands;
+}
+
+function expandToken(token: string, systemState: SystemState): string {
+	let expanded = '';
+
+	let i = 0;
+	if (token[0] === '~') {
+		expanded += '/' + systemState.homeDirectory.join('/');
+		i = 1;
+	}
+
+	let varName = '';
+	let inVar = false;
+	for (; i < token.length; i++) {
+		if (token[i] === '$') {
+			varName = '';
+			inVar = true;
+			continue;
+		}
+
+		if (inVar) {
+			if (/^\w+$/.test(token[i])) {
+				varName += token[i];
+				continue;
+			} else {
+				const envVar = systemState.environmentVariables[varName];
+				if (envVar) {
+					expanded += envVar.value;
+				}
+				inVar = false;
+			}
+			continue;
+		}
+
+		expanded += token[i];
+	}
+	if (inVar) {
+		const envVar = systemState.environmentVariables[varName];
+		if (envVar) {
+			expanded += envVar.value;
+		}
+	}
+
+	return expanded;
+}
+
+function parseCommandTokens(tokens: string[], system_state: SystemState): CommandParserCommand {
+	if (tokens.length === 0) {
+		return {
+			commandName: '',
+			args: [],
+			fileRedirections: []
+		};
+	}
+	const commandName = tokens[0];
+	const args: string[] = [];
+	const fileRedirections: FileRedirection[] = [];
+
+	for (let i = 1; i < tokens.length; i++) {
+		if (tokens[i] == '>' || tokens[i] == '>>') {
+			if (i + 1 >= tokens.length) {
+				throw new Error('No filename specified for output redirection');
+			}
+			const filename = expandToken(tokens[i + 1], system_state);
+
+			fileRedirections.push({ type: tokens[i] == '>' ? 'overwrite' : 'append', filename });
+			i++;
+		} else {
+			args.push(expandToken(tokens[i], system_state));
+		}
+	}
+
+	return {
+		commandName,
+		args,
+		fileRedirections
+	};
+}
+
+function redirectToFile(
+	redirection: FileRedirection,
+	output: string,
+	systemState: SystemState
+): void {
+	let fileNode = resolvePath(redirection.filename, systemState);
+
+	if (!fileNode) {
+		const newFileName = redirection.filename.split('/').pop();
+		if (!newFileName) {
+			throw new Error(`invalid file name: ${redirection.filename}`);
+		}
+
+		const parentPath = redirection.filename.substring(
+			0,
+			redirection.filename.length - newFileName.length
+		);
+		const parentNode = resolvePath(parentPath, systemState);
+
+		if (!parentNode) {
+			throw new Error(`no such file or directory: ${parentPath}`);
+		}
+
+		if (parentNode.type !== 'directory' && parentNode.type !== 'root') {
+			throw new Error(`not a directory: ${parentPath}`);
+		}
+
+		const newFileNode = {
+			name: newFileName,
+			type: 'file' as const,
+			children: [],
+			content: '',
+			parent: parentNode
+		};
+
+		parentNode.children.push(newFileNode);
+
+		fileNode = newFileNode;
+	}
+
+	if (fileNode.type !== 'file') {
+		throw new Error(`is a directory: ${redirection.filename}`);
+	}
+
+	if (redirection.type === 'overwrite') {
+		fileNode.content = output;
+	} else {
+		fileNode.content += output;
+	}
+}
+
 export function executeCommand(
 	input: string,
 	headerTime: Date,
@@ -98,17 +265,58 @@ export function executeCommand(
 ): CommandHistoryEntry {
 	const directory = currentDirectoryPath(systemState, true);
 
-	const tokens = input.trim().split(' ');
+	const commandsTokens = splitIntoCommandTokens(input);
+	if (commandsTokens.length === 0) {
+		return {
+			command: input,
+			directory,
+			output: '',
+			timestamp: headerTime
+		};
+	}
 
-	const commandName = tokens[0];
-	const args = tokens.slice(1);
+	let parsedCommands: CommandParserCommand[] = [];
+	try {
+		for (const tokens of commandsTokens) {
+			parsedCommands.push(parseCommandTokens(tokens, systemState));
+		}
+	} catch (error) {
+		return {
+			command: input,
+			directory,
+			output: `oli-shell: ${(error as Error).message}`,
+			timestamp: headerTime
+		};
+	}
 
-	const output = runCommand(commandName, args, systemState);
+	let stdOuts: string[] = [];
+	for (const cmd of parsedCommands) {
+		const command = commands[cmd.commandName];
+		if (!command) {
+			stdOuts.push(`oli-shell: command not found: ${cmd.commandName}`);
+			continue;
+		}
+
+		const output = command.execute(cmd.args, systemState);
+
+		if (cmd.fileRedirections.length > 0) {
+			for (const redirection of cmd.fileRedirections) {
+				try {
+					redirectToFile(redirection, output, systemState);
+				} catch (error) {
+					stdOuts.push(`oli-shell: ${(error as Error).message}`);
+					break;
+				}
+			}
+		} else {
+			stdOuts.push(output);
+		}
+	}
 
 	return {
 		command: input,
 		directory,
-		output,
+		output: stdOuts.join('\n'),
 		timestamp: headerTime
 	};
 }

@@ -6,15 +6,6 @@ function echo(args: string[], systemState: SystemState): string {
 
 	for (let i = 0; i < output.length; i++) {
 		output[i] = sanitize(output[i]);
-		if (output[i].startsWith('$')) {
-			const varName = output[i].substring(1);
-			const envVar = systemState.environmentVariables[varName];
-			if (envVar) {
-				output[i] = envVar.value;
-			} else {
-				output[i] = '';
-			}
-		}
 	}
 
 	return output.join(' ');
