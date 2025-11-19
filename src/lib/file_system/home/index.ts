@@ -18,7 +18,7 @@ const home: FileSystemNodeInput = {
 					name: 'change_log.txt',
 					type: 'file',
 					content:
-						"I recently added tab completion to the shell (activate by pressing Tab).\n\nFor the future, I really need to add more content/project descriptions/photos etc. I\'m also interested to add more commands and flesh out the tab completion more."
+						"Most recently I added more bash accurate command parsing and support to create new files/add content to them using > and >>\n\nI recently added tab completion to the shell (activate by pressing Tab).\n\nFor the future, I really need to add more content/project descriptions/photos etc. I\'m also interested to add more commands and flesh out the tab completion more."
 				},
 				{
 					name: 'projects',
