@@ -7,10 +7,7 @@ export function resolvePath(path: string, systemState: SystemState): FileSystemN
 	}
 
 	const elements = path.split('/');
-	if (elements[0] === '~') {
-		currentDirectory = systemState.homeDirectory.slice();
-		elements.shift();
-	} else if (elements[0] === '') {
+	if (elements[0] === '') {
 		currentDirectory = [''];
 		elements.shift();
 	}

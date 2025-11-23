@@ -1,0 +1,7 @@
+Nov 23
+Most recently I added more bash accurate command parsing and support to create new files/add content to them using > and >>. I still need to migrate the tab completion logic to use this kind of parsing because it is half broken. I also added asciimation inside the terminal
+
+Before Nov 23
+I recently added tab completion to the shell (activate by pressing Tab).
+
+For the future, I really need to add more content/project descriptions/photos etc. I'm also interested to add more commands and flesh out the tab completion more.

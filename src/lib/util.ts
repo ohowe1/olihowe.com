@@ -4,9 +4,8 @@ export function sanitize(string: string) {
 		'<': '&lt;',
 		'>': '&gt;',
 		'"': '&quot;',
-		"'": '&#x27;',
-		'/': '&#x2F;'
+		"'": '&#x27;'
 	};
-	const reg = /[&<>"'/]/gi;
+	const reg = /[&<>"']/gi;
 	return string.replace(reg, (match) => map[match]);
 }

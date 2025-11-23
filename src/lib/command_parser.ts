@@ -8,6 +8,7 @@ import { currentDirectoryPath, resolvePath } from './system_state_util';
 import rm from './commands/rm';
 import mkdir from './commands/mkdir';
 import touch from './commands/touch';
+import { sanitize } from './util';
 
 type Command = {
 	execute: (args: string[], systemState: SystemState) => string;
@@ -24,7 +25,7 @@ type FileRedirection = {
 type CommandParserCommand = {
 	commandName: string;
 	args: string[];
-	fileRedirections: FileRedirection[];
+	fileRedirects: FileRedirection[];
 };
 
 export type CommandHistoryEntry = {
@@ -96,26 +97,21 @@ export function getCommandCompletions(input: string, systemState: SystemState): 
 }
 
 function splitIntoCommandTokens(input: string): string[][] {
-	const splitCommands = [];
-	let currentCommand = [];
+	const splitCommands: string[][] = [];
+	let currentCommand: string[] = [];
 	let currentToken = '';
 	let inQuotes = false;
 
-	for (let i = 0; i < input.length; i++) {
-		const char = input[i];
+	for (const char of input) {
 		if (char === '"') {
 			inQuotes = !inQuotes;
-		} else if (char === ' ' && !inQuotes) {
-			if (currentToken.length > 0) {
+		} else if (!inQuotes && (char === ' ' || char === ';')) {
+			if (currentToken) {
 				currentCommand.push(currentToken);
 				currentToken = '';
 			}
-		} else if (char === ';' && !inQuotes) {
-			if (currentToken.length > 0) {
-				currentCommand.push(currentToken);
-				currentToken = '';
-			}
-			if (currentCommand.length > 0) {
+
+			if (char === ';' && currentCommand.length > 0) {
 				splitCommands.push(currentCommand);
 				currentCommand = [];
 			}
@@ -135,6 +131,9 @@ function splitIntoCommandTokens(input: string): string[][] {
 }
 
 function expandToken(token: string, systemState: SystemState): string {
+	// Sanitize the token first to handle escape sequences
+	token = sanitize(token);
+
 	let expanded = '';
 
 	let i = 0;
@@ -183,21 +182,21 @@ function parseCommandTokens(tokens: string[], system_state: SystemState): Comman
 		return {
 			commandName: '',
 			args: [],
-			fileRedirections: []
+			fileRedirects: []
 		};
 	}
 	const commandName = tokens[0];
 	const args: string[] = [];
-	const fileRedirections: FileRedirection[] = [];
+	const fileRedirects: FileRedirection[] = [];
 
 	for (let i = 1; i < tokens.length; i++) {
 		if (tokens[i] == '>' || tokens[i] == '>>') {
 			if (i + 1 >= tokens.length) {
-				throw new Error('syntax error near unexpected token `newline`');
+				throw new Error('syntax error near unexpected token `\\n`');
 			}
 			const filename = expandToken(tokens[i + 1], system_state);
 
-			fileRedirections.push({ type: tokens[i] == '>' ? 'overwrite' : 'append', filename });
+			fileRedirects.push({ type: tokens[i] == '>' ? 'overwrite' : 'append', filename });
 			i++;
 		} else {
 			args.push(expandToken(tokens[i], system_state));
@@ -207,7 +206,7 @@ function parseCommandTokens(tokens: string[], system_state: SystemState): Comman
 	return {
 		commandName,
 		args,
-		fileRedirections
+		fileRedirects
 	};
 }
 
@@ -303,8 +302,8 @@ export function executeCommand(
 
 		const output = command.execute(cmd.args, systemState);
 
-		if (cmd.fileRedirections.length > 0) {
-			for (const redirection of cmd.fileRedirections) {
+		if (cmd.fileRedirects.length > 0) {
+			for (const redirection of cmd.fileRedirects) {
 				try {
 					redirectToFile(redirection, output, systemState);
 				} catch (error) {
