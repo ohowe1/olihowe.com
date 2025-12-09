@@ -53,6 +53,10 @@ function makeInitialFileSystem(
 		if (initialSystem.type === 'root') {
 			const node: FileSystemNode = { ...initialSystem, children: [], parent };
 			node.children = initialSystem.children.map((child) => makeInitialFileSystem(child, node));
+			node.children.sort((a, b) => {
+				return a.name.localeCompare(b.name);
+			});
+
 			return node;
 		}
 		throw new Error('Only root node can have null parent');
@@ -63,6 +67,10 @@ function makeInitialFileSystem(
 	} else if (initialSystem.type === 'directory') {
 		const node: FileSystemNode = { ...initialSystem, children: [], parent };
 		node.children = initialSystem.children.map((child) => makeInitialFileSystem(child, node));
+		node.children.sort((a, b) => {
+			return a.name.localeCompare(b.name);
+		});
+
 		return node;
 	} else {
 		throw new Error('Root node must have null parent');

@@ -12,7 +12,7 @@ import { sanitize } from './util';
 
 type Command = {
 	execute: (args: string[], systemState: SystemState) => string;
-	completions?: (args: string[], lastArgComplete: boolean, systemState: SystemState) => string[];
+	completions?: (tokens: string[], systemState: SystemState) => string[];
 	description: string;
 	hide?: boolean;
 };
@@ -61,42 +61,61 @@ const commands: Record<string, Command> = {
 	touch
 };
 
-export function getCommandCompletions(input: string, systemState: SystemState): string[] {
-	const tokens = input.trim().split(' ');
-	const lastTokenComplete = input.endsWith(' ');
-	const commandName = tokens[0];
-	const args = tokens.slice(1);
-
-	if (tokens.length === 1 && !lastTokenComplete) {
-		// Suggest command names
-		let result = Object.keys(commands).filter(
-			(cmd) => !commands[cmd].hide && cmd.startsWith(commandName)
-		);
-		result.sort();
-
-		return result;
-	} else {
-		// Suggest arguments for the specific command
-		const command = commands[commandName];
-		if (command && command.completions) {
-			const commandResults = command.completions(
-				args,
-				lastTokenComplete && tokens.length > 1,
-				systemState
-			);
-
-			for (let i = 0; i < commandResults.length; i++) {
-				commandResults[i] = commandName + ' ' + commandResults[i];
+function remakeTokens(tokens: string[][]): string {
+	// This is kind of hacky and bad
+	let result = '';
+	for (let i = 0; i < tokens.length; i++) {
+		if (i > 0) {
+			result += '; ';
+		}
+		for (let j = 0; j < tokens[i].length; j++) {
+			if (j > 0) {
+				result += ' ';
 			}
 
-			return commandResults;
+			if (tokens[i][j].includes(' ')) {
+				result += `"${tokens[i][j]}"`;
+			} else {
+				result += tokens[i][j];
+			}
 		}
 	}
 
-	return [];
+	return result;
 }
 
-function splitIntoCommandTokens(input: string): string[][] {
+export function getCommandCompletions(input: string, systemState: SystemState): string[] {
+	const tokens = splitIntoCommandTokens(input, true);
+	const lastCommand = tokens[tokens.length - 1];
+
+	const lastToken = lastCommand[lastCommand.length - 1];
+
+	let options: string[] = [];
+	if (lastCommand.length <= 1) {
+		// Suggest command names
+		options = Object.keys(commands).filter(
+			(cmd) => !commands[cmd].hide && cmd.startsWith(lastToken)
+		);
+		options.sort();
+	} else {
+		// Suggest arguments for the specific command
+		const command = commands[lastCommand[0]];
+
+		if (command && command.completions) {
+			options = command.completions(lastCommand.slice(1), systemState);
+		}
+	}
+	const fullCompletions = [];
+	for (const option of options) {
+		fullCompletions.push(
+			remakeTokens([...tokens.slice(0, -1), [...lastCommand.slice(0, -1), option]])
+		);
+	}
+
+	return fullCompletions;
+}
+
+function splitIntoCommandTokens(input: string, pushIncomplete: boolean = false): string[][] {
 	const splitCommands: string[][] = [];
 	let currentCommand: string[] = [];
 	let currentToken = '';
@@ -119,11 +138,16 @@ function splitIntoCommandTokens(input: string): string[][] {
 			currentToken += char;
 		}
 	}
-	if (currentToken.length > 0) {
+
+	if (inQuotes && !pushIncomplete) {
+		throw new Error('syntax error: unmatched quotes');
+	}
+
+	if (pushIncomplete || currentToken.length > 0) {
 		currentCommand.push(currentToken);
 	}
 
-	if (currentCommand.length > 0) {
+	if (pushIncomplete || currentCommand.length > 0) {
 		splitCommands.push(currentCommand);
 	}
 
@@ -192,7 +216,7 @@ function parseCommandTokens(tokens: string[], system_state: SystemState): Comman
 	for (let i = 1; i < tokens.length; i++) {
 		if (tokens[i] == '>' || tokens[i] == '>>') {
 			if (i + 1 >= tokens.length) {
-				throw new Error('syntax error near unexpected token `\\n`');
+				throw new Error('syntax error: unexpected token `\\n`');
 			}
 			const filename = expandToken(tokens[i + 1], system_state);
 
@@ -268,21 +292,52 @@ export function executeCommand(
 ): CommandHistoryEntry {
 	const directory = currentDirectoryPath(systemState, true);
 
-	const commandsTokens = splitIntoCommandTokens(input);
-	if (commandsTokens.length === 0) {
-		return {
-			command: input,
-			directory,
-			output: '',
-			timestamp: headerTime
-		};
-	}
-
-	let parsedCommands: CommandParserCommand[] = [];
 	try {
+		const commandsTokens = splitIntoCommandTokens(input);
+		if (commandsTokens.length === 0) {
+			return {
+				command: input,
+				directory,
+				output: '',
+				timestamp: headerTime
+			};
+		}
+
+		let parsedCommands: CommandParserCommand[] = [];
 		for (const tokens of commandsTokens) {
 			parsedCommands.push(parseCommandTokens(tokens, systemState));
 		}
+
+		let stdOuts: string[] = [];
+		for (const cmd of parsedCommands) {
+			const command = commands[cmd.commandName];
+			if (!command) {
+				stdOuts.push(`oli-shell: command not found: ${cmd.commandName}`);
+				continue;
+			}
+
+			const output = command.execute(cmd.args, systemState);
+
+			if (cmd.fileRedirects.length > 0) {
+				for (const redirection of cmd.fileRedirects) {
+					try {
+						redirectToFile(redirection, output, systemState);
+					} catch (error) {
+						stdOuts.push(`oli-shell: ${(error as Error).message}`);
+						break;
+					}
+				}
+			} else {
+				stdOuts.push(output);
+			}
+		}
+
+		return {
+			command: input,
+			directory,
+			output: stdOuts.join('\n'),
+			timestamp: headerTime
+		};
 	} catch (error) {
 		return {
 			command: input,
@@ -291,35 +346,4 @@ export function executeCommand(
 			timestamp: headerTime
 		};
 	}
-
-	let stdOuts: string[] = [];
-	for (const cmd of parsedCommands) {
-		const command = commands[cmd.commandName];
-		if (!command) {
-			stdOuts.push(`oli-shell: command not found: ${cmd.commandName}`);
-			continue;
-		}
-
-		const output = command.execute(cmd.args, systemState);
-
-		if (cmd.fileRedirects.length > 0) {
-			for (const redirection of cmd.fileRedirects) {
-				try {
-					redirectToFile(redirection, output, systemState);
-				} catch (error) {
-					stdOuts.push(`oli-shell: ${(error as Error).message}`);
-					break;
-				}
-			}
-		} else {
-			stdOuts.push(output);
-		}
-	}
-
-	return {
-		command: input,
-		directory,
-		output: stdOuts.join('\n'),
-		timestamp: headerTime
-	};
 }

@@ -7,7 +7,11 @@ export function resolvePath(path: string, systemState: SystemState): FileSystemN
 	}
 
 	const elements = path.split('/');
-	if (elements[0] === '') {
+	if (elements[0] === '~') {
+		// Although the command parser replaces the ~ with the home directory, this is still necessary for tab completion
+		currentDirectory = systemState.homeDirectory.slice();
+		elements.shift();
+	} else if (elements[0] === '') {
 		currentDirectory = [''];
 		elements.shift();
 	}
@@ -92,31 +96,23 @@ export function fileCompletions(
 	return candidates;
 }
 
-export function oneArgFileCompletions(
-	args: string[],
-	lastArgComplete: boolean,
-	systemState: SystemState
-): string[] {
-	// Only complete the first argument
-	if (args.length === 0 || (args.length === 1 && !lastArgComplete)) {
-		const argPartial = lastArgComplete || args.length === 0 ? '' : args[0];
+export function oneArgFileCompletions(tokens: string[], systemState: SystemState): string[] {
+	console.assert(tokens.length > 0);
 
-		return fileCompletions(argPartial, systemState);
+	// Only complete the first argument
+	if (tokens.length <= 1) {
+		return fileCompletions(tokens[0], systemState);
 	}
 
 	return [];
 }
 
-export function oneArgDirectoryCompletions(
-	args: string[],
-	lastArgComplete: boolean,
-	systemState: SystemState
-): string[] {
-	// Only complete the first argument
-	if (args.length === 0 || (args.length === 1 && !lastArgComplete)) {
-		const argPartial = lastArgComplete || args.length === 0 ? '' : args[0];
+export function oneArgDirectoryCompletions(tokens: string[], systemState: SystemState): string[] {
+	console.assert(tokens.length > 0);
 
-		return fileCompletions(argPartial, systemState, true);
+	// Only complete the first argument
+	if (tokens.length <= 1) {
+		return fileCompletions(tokens[0], systemState, true);
 	}
 
 	return [];

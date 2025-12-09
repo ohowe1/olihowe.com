@@ -1,8 +1,8 @@
 import type { FileSystemNodeInput } from '$lib/system_state';
 import description from './description.txt?raw';
-import changelog from './change_log.txt?raw';
 import sites from './projects/sites.txt.html?raw';
 import asciimation from './projects/asciimation.anim.html?raw';
+import change_log from './change_log';
 
 const home: FileSystemNodeInput = {
 	name: 'home',
@@ -12,15 +12,11 @@ const home: FileSystemNodeInput = {
 			name: 'oli',
 			type: 'directory',
 			children: [
+				change_log,
 				{
 					name: 'description.txt',
 					type: 'file',
 					content: description
-				},
-				{
-					name: 'change_log.txt',
-					type: 'file',
-					content: changelog
 				},
 				{
 					name: 'projects',
