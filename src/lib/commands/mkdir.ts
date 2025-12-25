@@ -1,5 +1,5 @@
 import { type SystemState } from '../system_state';
-import { fileCompletions, oneArgDirectoryCompletions, resolvePath } from '../system_state_util';
+import { fileCompletions, oneArgDirectoryCompletions, resolvePath } from '../system';
 
 function mkdir(args: string[], systemState: SystemState): string {
 	if (args.length === 0) {

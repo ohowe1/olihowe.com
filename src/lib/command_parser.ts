@@ -4,7 +4,7 @@ import pwd from './commands/pwd';
 import ls from './commands/ls';
 import cat from './commands/cat';
 import { type SystemState } from './system_state';
-import { currentDirectoryPath, resolvePath } from './system_state_util';
+import { currentDirectoryPath, resolvePath } from './system';
 import rm from './commands/rm';
 import mkdir from './commands/mkdir';
 import touch from './commands/touch';

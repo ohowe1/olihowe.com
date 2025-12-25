@@ -4,7 +4,7 @@ import {
 	getFilePath,
 	oneArgFileCompletions,
 	resolvePath
-} from '$lib/system_state_util';
+} from '../system';
 
 function rm(args: string[], systemState: SystemState): string {
 	if (args.length === 0) {

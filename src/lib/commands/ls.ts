@@ -1,5 +1,5 @@
 import { type SystemState } from '../system_state';
-import { getFileNode, oneArgDirectoryCompletions } from '../system_state_util';
+import { getFileNode, oneArgDirectoryCompletions } from '../system';
 
 function ls(args: string[], systemState: SystemState): string {
 	const currentDir = systemState.currentDirectory;

@@ -1,5 +1,5 @@
 import { type SystemState } from '../system_state';
-import { fileCompletions, oneArgFileCompletions, resolvePath } from '../system_state_util';
+import { fileCompletions, oneArgFileCompletions, resolvePath } from '../system';
 
 function cat(args: string[], systemState: SystemState): string {
 	if (args.length === 0) {

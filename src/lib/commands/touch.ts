@@ -1,5 +1,5 @@
 import { type SystemState } from '../system_state';
-import { oneArgFileCompletions, resolvePath } from '../system_state_util';
+import { oneArgFileCompletions, resolvePath } from '../system';
 
 function touch(args: string[], systemState: SystemState): string {
 	if (args.length === 0) {

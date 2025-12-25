@@ -4,7 +4,7 @@ import {
 	getFilePath,
 	oneArgDirectoryCompletions,
 	resolvePath
-} from '../system_state_util';
+} from '../system';
 
 function cd(args: string[], systemState: SystemState): string {
 	if (args.length === 0) {
