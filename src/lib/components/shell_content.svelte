@@ -6,7 +6,7 @@
 		getCommandCompletions
 	} from '$lib/command_parser';
 	import CommandHeader from '$lib/components/command_header.svelte';
-	import { currentDirectoryPath } from '$lib/system_state_util';
+	import { currentDirectoryPath } from '$lib/system';
 	import { onMount, tick } from 'svelte';
 	import CommandEntry from '$lib/components/command_entry.svelte';
 	import CommandLine from '$lib/components/command_line.svelte';
