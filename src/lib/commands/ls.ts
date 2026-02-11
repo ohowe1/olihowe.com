@@ -9,7 +9,7 @@ function ls(args: string[], systemState: SystemState): string {
 		return 'ls: cannot access directory';
 	}
 
-	return fileNode.children.map((child) => child.name).join(' ');
+	return fileNode.children.filter((child) => !child.hidden).map((child) => child.name).join(' ');
 }
 
 export default {

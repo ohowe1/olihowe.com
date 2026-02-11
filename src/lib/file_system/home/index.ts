@@ -33,6 +33,18 @@ const home: FileSystemNodeInput = {
 							content: asciimation
 						}
 					]
+				},
+				{
+					name: 'ily',
+					type: 'directory',
+					children: [
+						{
+							name: 'site.txt',
+							type: 'file',
+							content: '<a href="https://ily.olihowe.com">click to site</a>'
+						}
+					],
+					hidden: true
 				}
 			]
 		}

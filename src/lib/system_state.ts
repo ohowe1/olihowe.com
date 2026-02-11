@@ -5,6 +5,7 @@ export type FileNode = {
 	type: 'file';
 	content: string;
 	parent: DirectoryNode | RootNode;
+	hidden?: boolean;
 };
 
 export type DirectoryNode = {
@@ -12,6 +13,7 @@ export type DirectoryNode = {
 	type: 'directory';
 	children: FileSystemNode[];
 	parent: DirectoryNode | RootNode;
+	hidden?: boolean;
 };
 
 export type RootNode = {
@@ -19,6 +21,7 @@ export type RootNode = {
 	type: 'root';
 	children: FileSystemNode[];
 	parent: null;
+	hidden?: boolean;
 };
 
 export type FileSystemNode = FileNode | DirectoryNode | RootNode;
