@@ -41,7 +41,7 @@ const home: FileSystemNodeInput = {
 						{
 							name: 'site.txt',
 							type: 'file',
-							content: '<a href="https://ily.olihowe.com">click to site</a>'
+							content: '<a href="https://clip.olihowe.com/ily">click to site</a>'
 						}
 					],
 					hidden: true
