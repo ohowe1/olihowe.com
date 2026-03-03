@@ -63,6 +63,9 @@
 	let currentCompletions: string[] | null = null;
 	let completionsIndex: number = 0;
 
+	let historyFilter: string = '';
+	let historyIndex: number = 0;
+
 	let inputDisabled: boolean = $state(instantInitialCommands ? false : true);
 	let userRanCommand: boolean = $state(false);
 	let skipTyping = false;
@@ -151,14 +154,17 @@
 			}
 		}
 		commandInput = '';
-		resetCompletions();
+		resetCompletionsAndHistory();
 
 		tick().then(() => window.scrollTo(0, document.body.scrollHeight));
 	};
 
-	const resetCompletions = () => {
+	const resetCompletionsAndHistory = () => {
 		currentCompletions = null;
 		completionsIndex = 0;
+
+		historyFilter = '';
+		historyIndex = 0;
 	};
 
 	const handleKeyDown = (event: KeyboardEvent) => {
@@ -187,6 +193,38 @@
 			if (currentCompletions.length > completionsIndex) {
 				commandInput = currentCompletions[completionsIndex];
 			}
+
+			return;
+		} else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+			event.preventDefault();
+
+			if (historyIndex === 0) {
+				historyFilter = commandInput;
+			}
+
+			const filteredHistory = commandHistory.filter((entry) =>
+				entry.command.startsWith(historyFilter)
+			);
+
+			if (filteredHistory.length === 0) {
+				return;
+			}
+
+			if (event.key === 'ArrowUp') {
+				historyIndex = Math.min(historyIndex + 1, filteredHistory.length);
+			} else {
+				historyIndex = Math.max(historyIndex - 1, 0);
+			}
+
+			if (historyIndex === 0) {
+				commandInput = historyFilter;
+			} else if (historyIndex > 0 && historyIndex <= filteredHistory.length) {
+				commandInput = filteredHistory[filteredHistory.length - historyIndex].command;
+			} else {
+				commandInput = '';
+			}
+
+			return;
 		}
 
 		if (document.activeElement === inputElement) {
@@ -202,7 +240,7 @@
 			inputElement.focus();
 			commandInput += event.key;
 
-			resetCompletions();
+			resetCompletionsAndHistory();
 		}
 	};
 </script>
@@ -234,7 +272,7 @@
 				disabled={inputDisabled}
 				bind:value={commandInput}
 				bind:this={inputElement}
-				oninput={resetCompletions}
+				oninput={resetCompletionsAndHistory}
 			/>
 		</CommandLine>
 	</form>

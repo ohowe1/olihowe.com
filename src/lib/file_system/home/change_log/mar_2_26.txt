@@ -1,0 +1,1 @@
+Added history and arrow keys to navigate it
