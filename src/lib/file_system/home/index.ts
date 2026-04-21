@@ -34,18 +34,6 @@ const home: FileSystemNodeInput = {
 						}
 					]
 				},
-				{
-					name: 'ily',
-					type: 'directory',
-					children: [
-						{
-							name: 'site.txt',
-							type: 'file',
-							content: '<a href="https://clip.olihowe.com/ily">click to site</a>'
-						}
-					],
-					hidden: true
-				}
 			]
 		}
 	]
