@@ -12,7 +12,7 @@ function export_(args: string[], systemState: SystemState): CommandOutput {
 
     if (key in systemState.environmentVariables) {
       if (!systemState.environmentVariables[key].mutable) {
-        outputs.push(textOutput(`export: ${key}: variable is read-only`));
+        outputs.push(`export: ${key}: variable is read-only`);
         continue;
       }
     }
