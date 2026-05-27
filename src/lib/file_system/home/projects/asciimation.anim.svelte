@@ -8,7 +8,6 @@
 		title="Asciimation"
 		class="asciimation-iframe"
 		frameborder="0"
-		allowfullscreen
 	></iframe>
 </div>
 
