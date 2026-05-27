@@ -1,5 +1,5 @@
 import { type SystemState } from '../system_state';
-import { fileCompletions, oneArgDirectoryCompletions, resolvePath } from '../system';
+import { checkFileName, oneArgDirectoryCompletions, resolvePath } from '../system';
 
 import { textOutput, type CommandOutput } from '../command_output';
 
@@ -11,7 +11,7 @@ function mkdir(args: string[], systemState: SystemState): CommandOutput {
 	const target = args[0];
 
 	const newDirectoryName = target.split('/').pop();
-	if (!newDirectoryName) {
+	if (!checkFileName(newDirectoryName)) {
 		return textOutput(`mkdir: invalid directory name: ${target}`);
 	}
 

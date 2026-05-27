@@ -4,6 +4,7 @@ import description from './description.txt.svelte';
 import sites from './projects/sites.txt.svelte';
 import asciimation from './projects/asciimation.anim.svelte';
 import e80 from './projects/e80.txt.svelte';
+import clipboard from './projects/clipboard.html.svelte';
 
 const home: FileSystemNodeInput = {
 	name: 'home',
@@ -37,6 +38,11 @@ const home: FileSystemNodeInput = {
 							name: 'e80.txt',
 							type: 'file',
 							content: e80
+						},
+						{
+							name: 'clipboard.html',
+							type: 'file',
+							content: clipboard
 						}
 					]
 				},

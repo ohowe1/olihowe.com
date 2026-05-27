@@ -8,6 +8,8 @@ import { currentDirectoryPath, resolvePath } from './system';
 import rm from './commands/rm';
 import mkdir from './commands/mkdir';
 import touch from './commands/touch';
+import mv from './commands/mv';
+import export_ from './commands/export';
 import { sanitize } from './util';
 import { type CommandOutput, textOutput } from './command_output';
 
@@ -61,7 +63,9 @@ const commands: Record<string, Command> = {
 	cat,
 	rm,
 	mkdir,
-	touch
+	touch,
+	mv,
+	"export": export_
 };
 
 function remakeTokens(tokens: string[][]): string {

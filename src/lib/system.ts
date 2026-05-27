@@ -59,6 +59,10 @@ export function getFilePath(node: FileSystemNode): string[] {
 	return path;
 }
 
+export function checkFileName(name: string | null | undefined): name is string {
+	return name !== undefined && name !== null && name !== '' && name !== '.' && name !== '..';
+}
+
 export function currentDirectoryPath(systemState: SystemState, replaceHome?: boolean): string {
 	if (replaceHome) {
 		const homePath = systemState.homeDirectory.join('/');
@@ -96,8 +100,19 @@ export function fileCompletions(
 	return candidates;
 }
 
+export function allArgsFileCompletions(tokens: string[], systemState: SystemState): string[] {
+	if (tokens.length === 0) {
+		throw new Error('tokens should never be empty');
+	}
+
+	const lastToken = tokens[tokens.length - 1];
+	return fileCompletions(lastToken, systemState);
+}
+
 export function oneArgFileCompletions(tokens: string[], systemState: SystemState): string[] {
-	console.assert(tokens.length > 0);
+	if (tokens.length === 0) {
+		throw new Error('tokens should never be empty');
+	}
 
 	// Only complete the first argument
 	if (tokens.length <= 1) {
@@ -108,7 +123,9 @@ export function oneArgFileCompletions(tokens: string[], systemState: SystemState
 }
 
 export function oneArgDirectoryCompletions(tokens: string[], systemState: SystemState): string[] {
-	console.assert(tokens.length > 0);
+	if (tokens.length === 0) {
+		throw new Error('tokens should never be empty');
+	}
 
 	// Only complete the first argument
 	if (tokens.length <= 1) {

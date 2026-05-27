@@ -16,7 +16,7 @@
 <style>
 	.robot-image {
 		width: 100%;
-		max-width: 250px;
+		max-width: 300px;
 		height: auto;
 		border-radius: 4px;
 		display: block;

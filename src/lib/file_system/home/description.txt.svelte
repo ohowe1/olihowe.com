@@ -7,5 +7,5 @@
   <br/>
   <br/>
 
-  I am currently a platform architecture intern at <a href="https://www.apple.com/" target="_blank" rel="noopener noreferrer">Apple</a> in Cupertino. Previously, I was an intern at <a href="https://www.jpl.nasa.gov/" target="_blank" rel="noopener noreferrer">NASA Jet Propulsion Laboratory</a> in Pasadena in the RF Electronics Group working on radar hardware test automation.
+  This summer I am a platform architecture intern at <a href="https://www.apple.com/" target="_blank" rel="noopener noreferrer">Apple</a> in Cupertino. In the previous summer, I was an intern at <a href="https://www.jpl.nasa.gov/" target="_blank" rel="noopener noreferrer">NASA Jet Propulsion Laboratory</a> in Pasadena in the RF Electronics Group working on radar hardware test automation.
 </span>

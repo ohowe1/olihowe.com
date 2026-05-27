@@ -1,5 +1,5 @@
 import { type SystemState } from '../system_state';
-import { oneArgFileCompletions, resolvePath } from '../system';
+import { checkFileName, oneArgFileCompletions, resolvePath } from '../system';
 
 import { textOutput, type CommandOutput } from '../command_output';
 
@@ -11,7 +11,7 @@ function touch(args: string[], systemState: SystemState): CommandOutput {
 	const target = args[0];
 
 	const newFileName = target.split('/').pop();
-	if (!newFileName) {
+	if (!checkFileName(newFileName)) {
 		return textOutput(`touch: invalid file name: ${target}`);
 	}
 

@@ -5,7 +5,7 @@
 </script>
 
 <div class="command-line">
-	<span class="caret">›&nbsp;</span><span class="content">{@render children?.()}</span><span
+	<span class="caret">›&nbsp;</span><span class="content">{@render children?.()}</span><span class="timestamp"
 		>[{timestamp.toLocaleTimeString([], {
 			hour12: false,
 			hour: '2-digit',
@@ -16,7 +16,8 @@
 </div>
 
 <style>
-	.caret {
+	.caret,
+	.timestamp {
 		user-select: none;
 	}
 	.content {
