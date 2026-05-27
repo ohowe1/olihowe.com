@@ -284,6 +284,7 @@
 				bind:value={commandInput}
 				bind:this={inputElement}
 				oninput={resetCompletionsAndHistory}
+				autocapitalize="none"
 			/>
 		</CommandLine>
 	</form>
