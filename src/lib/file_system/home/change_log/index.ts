@@ -3,6 +3,7 @@ import type { FileSystemNodeInput } from '$lib/system_state';
 import old from './old.txt?raw';
 import dec_8_25 from './dec_8_25.txt?raw';
 import mar_2_26 from './mar_2_26.txt?raw';
+import may_26_26 from './may_26_26.txt?raw';
 
 const change_log: FileSystemNodeInput = {
 	name: 'change_log',
@@ -22,6 +23,11 @@ const change_log: FileSystemNodeInput = {
       name: 'mar_2_26.txt',
       type: 'file',
       content: mar_2_26
+    },
+    {
+      name: 'may_26_26.txt',
+      type: 'file',
+      content: may_26_26
     }
 	]
 };

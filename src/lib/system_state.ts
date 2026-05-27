@@ -1,9 +1,12 @@
+import type { Component } from 'svelte';
 import root from './file_system/index';
+
+export type FileContent = string | Component<any> | FileContent[];
 
 export type FileNode = {
 	name: string;
 	type: 'file';
-	content: string;
+	content: FileContent;
 	parent: DirectoryNode | RootNode;
 	hidden?: boolean;
 };

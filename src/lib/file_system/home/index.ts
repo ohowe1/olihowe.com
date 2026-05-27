@@ -1,8 +1,9 @@
 import type { FileSystemNodeInput } from '$lib/system_state';
 import description from './description.txt?raw';
-import sites from './projects/sites.txt.html?raw';
-import asciimation from './projects/asciimation.anim.html?raw';
 import change_log from './change_log';
+import Sites from '../../components/files/Sites.txt.svelte';
+import Asciimation from '../../components/files/Asciimation.anim.svelte';
+import E80 from '../../components/files/E80.txt.svelte';
 
 const home: FileSystemNodeInput = {
 	name: 'home',
@@ -25,12 +26,17 @@ const home: FileSystemNodeInput = {
 						{
 							name: 'sites.txt',
 							type: 'file',
-							content: sites
+							content: Sites
 						},
 						{
 							name: 'asciimation.anim',
 							type: 'file',
-							content: asciimation
+							content: Asciimation
+						},
+						{
+							name: 'e80.txt',
+							type: 'file',
+							content: E80
 						}
 					]
 				},

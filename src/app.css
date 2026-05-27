@@ -1,8 +1,8 @@
 :root {
 	font-family: monospace;
 
-	color: #acb1bd;
-	background-color: #21242a;
+	color: var(--white);
+	background-color: var(--black);
 
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
@@ -10,20 +10,35 @@
 	-moz-osx-font-smoothing: grayscale;
 
 	font-size: 16px;
+
+	--white: #acb1bd;
+	--black: #21242a;
+	--red: #e06c75;
+	--green: #98c379;
+	--yellow: #e5c07b;
+	--blue: #61afef;
+	--magenta: #c678dd;
+	--cyan: #56b6c2;
 }
 
+button {
+	font-family: monospace;
+	font-size: 16px;
+}
+
+
 a {
-	color: #6fb3bf;
+	color: var(--cyan);
 }
 
 .magenta {
-	color: #bb7bd7;
+	color: var(--magenta);
 }
 
 .cyan {
-	color: #6fb3bf;
+	color: var(--cyan);
 }
 
 .green {
-	color: #a0c180;
+	color: var(--green);
 }

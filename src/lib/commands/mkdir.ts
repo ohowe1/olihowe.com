@@ -1,32 +1,34 @@
 import { type SystemState } from '../system_state';
 import { fileCompletions, oneArgDirectoryCompletions, resolvePath } from '../system';
 
-function mkdir(args: string[], systemState: SystemState): string {
+import { textOutput, type CommandOutput } from '../command_output';
+
+function mkdir(args: string[], systemState: SystemState): CommandOutput {
 	if (args.length === 0) {
-		return 'mkdir: missing argument';
+		return textOutput('mkdir: missing argument');
 	}
 
 	const target = args[0];
 
 	const newDirectoryName = target.split('/').pop();
 	if (!newDirectoryName) {
-		return `mkdir: invalid directory name: ${target}`;
+		return textOutput(`mkdir: invalid directory name: ${target}`);
 	}
 
 	const parentPath = target.substring(0, target.length - newDirectoryName.length);
 	const parentNode = resolvePath(parentPath, systemState);
 
 	if (!parentNode) {
-		return `mkdir: no such file or directory: ${parentPath}`;
+		return textOutput(`mkdir: no such file or directory: ${parentPath}`);
 	}
 
 	if (parentNode.type !== 'directory' && parentNode.type !== 'root') {
-		return `mkdir: not a directory: ${parentPath}`;
+		return textOutput(`mkdir: not a directory: ${parentPath}`);
 	}
 
 	const existingNode = parentNode.children.find((child) => child.name === newDirectoryName);
 	if (existingNode) {
-		return `mkdir: ${target}: file exists`;
+		return textOutput(`mkdir: ${target}: file exists`);
 	}
 
 	const newFileNode = {
@@ -38,7 +40,7 @@ function mkdir(args: string[], systemState: SystemState): string {
 
 	parentNode.children.push(newFileNode);
 
-	return '';
+	return textOutput('');
 }
 
 export default {

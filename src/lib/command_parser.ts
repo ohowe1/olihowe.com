@@ -9,9 +9,12 @@ import rm from './commands/rm';
 import mkdir from './commands/mkdir';
 import touch from './commands/touch';
 import { sanitize } from './util';
+import { type CommandOutput, textOutput } from './command_output';
 
-type Command = {
-	execute: (args: string[], systemState: SystemState) => string;
+import MultiOutput from './components/outputs/MultiOutput.svelte';
+
+export type Command = {
+	execute: (args: string[], systemState: SystemState) => CommandOutput;
 	completions?: (tokens: string[], systemState: SystemState) => string[];
 	description: string;
 	hide?: boolean;
@@ -31,24 +34,24 @@ type CommandParserCommand = {
 export type CommandHistoryEntry = {
 	command: string;
 	directory: string;
-	output: string;
+	output: CommandOutput;
 	timestamp: Date;
 };
 
 const commands: Record<string, Command> = {
 	'': {
 		description: 'No command entered.',
-		execute: () => '',
+		execute: () => textOutput(''),
 		hide: true
 	},
 	help: {
 		description: 'List available commands.',
-		execute: (_args: string[], _systemState: SystemState): string => {
+		execute: (_args: string[], _systemState: SystemState): CommandOutput => {
 			const commandList = Object.entries(commands)
 				.filter(([, cmd]) => !cmd.hide)
 				.map(([name, cmd]) => `${name}: ${cmd.description}`)
 				.join('\n');
-			return `Available commands:\n${commandList}`;
+			return textOutput(`Available commands:\n${commandList}`);
 		}
 	},
 	cd,
@@ -236,7 +239,7 @@ function parseCommandTokens(tokens: string[], system_state: SystemState): Comman
 
 function redirectToFile(
 	redirection: FileRedirection,
-	output: string,
+	output: CommandOutput,
 	systemState: SystemState
 ): void {
 	let fileNode = resolvePath(redirection.filename, systemState);
@@ -278,10 +281,20 @@ function redirectToFile(
 		throw new Error(`is a directory: ${redirection.filename}`);
 	}
 
+	const newContent = output.rawValue;
+
 	if (redirection.type === 'overwrite') {
-		fileNode.content = output;
+		fileNode.content = newContent;
 	} else {
-		fileNode.content += output;
+		if (typeof fileNode.content === 'string' && typeof newContent === 'string') {
+			fileNode.content += newContent;
+		} else {
+			const contentsA = fileNode.content === ''
+				? []
+				: (Array.isArray(fileNode.content) ? fileNode.content : [fileNode.content]);
+			const contentsB = Array.isArray(newContent) ? newContent : [newContent];
+			fileNode.content = [...contentsA, ...contentsB];
+		}
 	}
 }
 
@@ -298,7 +311,7 @@ export function executeCommand(
 			return {
 				command: input,
 				directory,
-				output: '',
+				output: textOutput(''),
 				timestamp: headerTime
 			};
 		}
@@ -308,22 +321,28 @@ export function executeCommand(
 			parsedCommands.push(parseCommandTokens(tokens, systemState));
 		}
 
-		let stdOuts: string[] = [];
+		let stdOuts: CommandOutput[] = [];
 		for (const cmd of parsedCommands) {
 			const command = commands[cmd.commandName];
 			if (!command) {
-				stdOuts.push(`oli-shell: command not found: ${cmd.commandName}`);
+				stdOuts.push(textOutput(`oli-shell: command not found: ${cmd.commandName}`));
 				continue;
 			}
 
-			const output = command.execute(cmd.args, systemState);
+			let output: CommandOutput;
+			try {
+				output = command.execute(cmd.args, systemState);
+			} catch (error) {
+				stdOuts.push(textOutput(`oli-shell: ${(error as Error).message}`));
+				continue;
+			}
 
 			if (cmd.fileRedirects.length > 0) {
 				for (const redirection of cmd.fileRedirects) {
 					try {
 						redirectToFile(redirection, output, systemState);
 					} catch (error) {
-						stdOuts.push(`oli-shell: ${(error as Error).message}`);
+						stdOuts.push(textOutput(`oli-shell: ${(error as Error).message}`));
 						break;
 					}
 				}
@@ -332,17 +351,30 @@ export function executeCommand(
 			}
 		}
 
+		let finalOutput: CommandOutput;
+		if (stdOuts.length === 0) {
+			finalOutput = textOutput('');
+		} else if (stdOuts.length === 1) {
+			finalOutput = stdOuts[0];
+		} else {
+			finalOutput = {
+				uiComponent: MultiOutput,
+				props: { outputs: stdOuts },
+				rawValue: stdOuts.map((o) => o.rawValue)
+			};
+		}
+
 		return {
 			command: input,
 			directory,
-			output: stdOuts.join('\n'),
+			output: finalOutput,
 			timestamp: headerTime
 		};
 	} catch (error) {
 		return {
 			command: input,
 			directory,
-			output: `oli-shell: ${(error as Error).message}`,
+			output: textOutput(`oli-shell: ${(error as Error).message}`),
 			timestamp: headerTime
 		};
 	}

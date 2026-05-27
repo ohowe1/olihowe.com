@@ -1,9 +1,11 @@
 import { type SystemState } from '../system_state';
 import { fileCompletions, oneArgFileCompletions, resolvePath } from '../system';
+import { type CommandOutput, textOutput } from '../command_output';
+import FileContentRenderer from '../components/outputs/FileContentRenderer.svelte';
 
-function cat(args: string[], systemState: SystemState): string {
+function cat(args: string[], systemState: SystemState): CommandOutput {
 	if (args.length === 0) {
-		return 'cat: missing argument';
+		return textOutput('cat: missing argument');
 	}
 
 	const target = args[0];
@@ -11,14 +13,18 @@ function cat(args: string[], systemState: SystemState): string {
 	const newFileNode = resolvePath(target, systemState);
 
 	if (!newFileNode) {
-		return `cat: no such file or directory: ${target}`;
+		return textOutput(`cat: no such file or directory: ${target}`);
 	}
 
 	if (newFileNode.type !== 'file') {
-		return `cat: not a file: ${target}`;
+		return textOutput(`cat: not a file: ${target}`);
 	}
 
-	return newFileNode.content;
+	return {
+		uiComponent: FileContentRenderer,
+		props: { content: newFileNode.content },
+		rawValue: newFileNode.content
+	};
 }
 
 export default {

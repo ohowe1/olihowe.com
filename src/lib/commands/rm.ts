@@ -6,9 +6,11 @@ import {
 	resolvePath
 } from '../system';
 
-function rm(args: string[], systemState: SystemState): string {
+import { textOutput, type CommandOutput } from '../command_output';
+
+function rm(args: string[], systemState: SystemState): CommandOutput {
 	if (args.length === 0) {
-		return 'rm: missing argument';
+		return textOutput('rm: missing argument');
 	}
 
 	let removingFile = true;
@@ -20,7 +22,7 @@ function rm(args: string[], systemState: SystemState): string {
 			} else if (flag === 'f') {
 				continue;
 			} else {
-				return `rm: invalid option -- '${flag}'`;
+				return textOutput(`rm: invalid option -- '${flag}'`);
 			}
 		}
 
@@ -28,7 +30,7 @@ function rm(args: string[], systemState: SystemState): string {
 	}
 
 	if (args.length === 0) {
-		return 'rm: missing argument';
+		return textOutput('rm: missing argument');
 	}
 
 	const target = args[0];
@@ -36,17 +38,17 @@ function rm(args: string[], systemState: SystemState): string {
 	let fileNode = resolvePath(target, systemState);
 
 	if (!fileNode) {
-		return `rm: no such file or directory: ${target}`;
+		return textOutput(`rm: no such file or directory: ${target}`);
 	}
 
 	if (fileNode.type === 'root') {
-		return `rm: cannot remove root directory`;
+		return textOutput(`rm: cannot remove root directory`);
 	}
 	if (removingFile && fileNode.type !== 'file') {
-		return `rm: '${target}': is a directory`;
+		return textOutput(`rm: '${target}': is a directory`);
 	}
 	if (!removingFile && fileNode.type !== 'directory') {
-		return `rm: not a directory: ${target}`;
+		return textOutput(`rm: not a directory: ${target}`);
 	}
 
 	const parent = fileNode.parent;
@@ -58,7 +60,7 @@ function rm(args: string[], systemState: SystemState): string {
 		systemState.currentDirectory = getFilePath(parent);
 	}
 
-	return '';
+	return textOutput('');
 }
 
 export default {

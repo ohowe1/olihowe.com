@@ -1,20 +1,28 @@
 <script lang="ts">
 	import CommandHeader from './command_header.svelte';
 	import CommandLine from './command_line.svelte';
+	import type { CommandOutput } from '$lib/command_output';
 
 	const {
 		command,
 		directory,
 		output,
-		timestamp: date
-	}: { command: string; directory: string; output: string; timestamp: Date } = $props();
+		timestamp: date,
+		execute
+	}: {
+		command: string;
+		directory: string;
+		output: CommandOutput;
+		timestamp: Date;
+		execute: (command: string) => void;
+	} = $props();
 </script>
 
 <div class="command-entry">
 	<CommandHeader {directory} />
 	<CommandLine timestamp={date}>{command}</CommandLine>
 	<div class="output">
-		{@html output}
+		<output.uiComponent {...output.props} {execute} />
 	</div>
 </div>
 
@@ -23,7 +31,4 @@
 		margin-bottom: 0.4rem;
 	}
 
-	.output {
-		white-space: pre-wrap;
-	}
 </style>

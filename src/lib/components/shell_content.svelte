@@ -5,6 +5,7 @@
 		executeCommand,
 		getCommandCompletions
 	} from '$lib/command_parser';
+	import { textOutput } from '$lib/command_output';
 	import CommandHeader from '$lib/components/command_header.svelte';
 	import { currentDirectoryPath } from '$lib/system';
 	import { onMount, tick } from 'svelte';
@@ -89,7 +90,7 @@
 							? {
 									command: cmd.command,
 									directory: currentDirectory,
-									output: cmd.forcedResult,
+									output: textOutput(cmd.forcedResult),
 									timestamp: new Date()
 								}
 							: executeCommandAndUpdateState(cmd.command);
@@ -127,7 +128,7 @@
 					? {
 							command: cmd.command,
 							directory: currentDirectory,
-							output: cmd.forcedResult,
+							output: textOutput(cmd.forcedResult),
 							timestamp: new Date()
 						}
 					: executeCommandAndUpdateState(commandInput);
@@ -157,6 +158,15 @@
 		resetCompletionsAndHistory();
 
 		tick().then(() => window.scrollTo(0, document.body.scrollHeight));
+	};
+
+	const executeCommandFromOutput = async (commandLine: string) => {
+		commandInput = commandLine;
+		await tick();
+		executeAndResetCommand(true);
+		if (inputElement) {
+			inputElement.focus();
+		}
 	};
 
 	const resetCompletionsAndHistory = () => {
@@ -254,6 +264,7 @@
 			directory={entry.directory}
 			output={entry.output}
 			timestamp={entry.timestamp}
+			execute={executeCommandFromOutput}
 		/>
 	{/each}
 

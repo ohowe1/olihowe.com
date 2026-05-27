@@ -1,0 +1,1 @@
+Made all the files and commands a svelte output instead of text and it looks a lot cooler and allows for more interactive stuff.
