@@ -1,7 +1,3 @@
-<script lang="ts">
-	let { execute }: { execute: (command: string) => void } = $props();
-</script>
-
 <div class="asciimation-container">
 	<iframe
 		src="https://sites.olihowe.com/asciimation-web/nofooter.html?color=%23acb1bd"

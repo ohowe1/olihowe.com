@@ -7,7 +7,7 @@ import FileContentRenderer from './FileContentRenderer.svelte';
 		execute
 	}: {
 		contents: FileContent[];
-		execute: (command: string) => void;
+		execute: (command: string) => Promise<void>;
 	} = $props();
 </script>
 

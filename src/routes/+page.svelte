@@ -16,6 +16,9 @@
 		},
 		{
 			command: 'echo $LINKEDIN'
+		},
+		{
+			command: 'ls'
 		}
 	];
 </script>

@@ -8,7 +8,7 @@
 		execute
 	}: {
 		content: FileContent;
-		execute: (command: string) => void;
+		execute: (command: string) => Promise<void>;
 	} = $props();
 
 	let ContentComponent = $derived(content as any);

@@ -1,7 +1,3 @@
-<script lang="ts">
-	let { execute }: { execute: (command: string) => void } = $props();
-</script>
-
 <span>
 	For my experimental engineering class (E80) we built an autonomous vehicle that navigated the
 	ocean surface with a sensor package that was lowered on a winch and collected data on the

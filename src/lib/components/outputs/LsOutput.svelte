@@ -6,12 +6,14 @@
 		execute
 	}: {
 		children: FileSystemNode[];
-		execute: (command: string) => void;
+		execute: (command: string) => Promise<void>;
 	} = $props();
 
 	const handleItemClick = (node: FileSystemNode) => {
 		if (node.type === 'directory') {
-			execute(`cd ${node.name}`);
+			execute(`cd ${node.name}`).then(() => {
+				execute('ls');
+			});
 		} else if (node.type === 'file') {
 			execute(`cat ${node.name}`);
 		}

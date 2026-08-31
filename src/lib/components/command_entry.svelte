@@ -14,7 +14,7 @@
 		directory: string;
 		output: CommandOutput;
 		timestamp: Date;
-		execute: (command: string) => void;
+		execute: (command: string) => Promise<void>;
 	} = $props();
 </script>
 

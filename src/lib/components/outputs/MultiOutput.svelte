@@ -6,7 +6,7 @@
 		execute
 	}: {
 		outputs: CommandOutput[];
-		execute: (command: string) => void;
+		execute: (command: string) => Promise<void>;
 	} = $props();
 </script>
 
