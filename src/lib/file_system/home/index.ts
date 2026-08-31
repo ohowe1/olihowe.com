@@ -45,7 +45,7 @@ const home: FileSystemNodeInput = {
 							content: clipboard
 						}
 					]
-				},
+				}
 			]
 		}
 	]

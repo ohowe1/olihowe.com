@@ -16,9 +16,9 @@ function mv(args: string[], systemState: SystemState): CommandOutput {
 		return textOutput(`mv: no such file or directory: ${source}`);
 	}
 
-  if (sourceNode.type === 'root') {
-    return textOutput(`mv: cannot move root directory`);
-  }
+	if (sourceNode.type === 'root') {
+		return textOutput(`mv: cannot move root directory`);
+	}
 
 	const destinationNode = resolvePath(destination, systemState);
 	if (!destinationNode) {
@@ -29,15 +29,15 @@ function mv(args: string[], systemState: SystemState): CommandOutput {
 		return textOutput(`mv: not a directory: ${destination}`);
 	}
 
-  // Make sure we're not moving a directory into itself
-  let destinationParent: FileSystemNode | null = destinationNode;
-  while (destinationParent) {
-    if (destinationParent === sourceNode) {
-      return textOutput(`mv: cannot move a directory into itself: ${destination}`);
-    }
+	// Make sure we're not moving a directory into itself
+	let destinationParent: FileSystemNode | null = destinationNode;
+	while (destinationParent) {
+		if (destinationParent === sourceNode) {
+			return textOutput(`mv: cannot move a directory into itself: ${destination}`);
+		}
 
-    destinationParent = destinationParent.parent;
-  }
+		destinationParent = destinationParent.parent;
+	}
 
 	// Get a reference to the current directory node from the current directory string array so we can update that string array if it was moved
 	const currentDirectoryNode = getFileNode(systemState.currentDirectory, systemState);
@@ -46,10 +46,12 @@ function mv(args: string[], systemState: SystemState): CommandOutput {
 		return textOutput(`mv: current directory does not exist. this should never happen`);
 	}
 
-  // If a file with the same name already exists in the destination, remove it so we overwrite
-	destinationNode.children = destinationNode.children.filter((child) => child.name !== sourceNode.name);
+	// If a file with the same name already exists in the destination, remove it so we overwrite
+	destinationNode.children = destinationNode.children.filter(
+		(child) => child.name !== sourceNode.name
+	);
 
-  // remove from old parent and add to new parent
+	// remove from old parent and add to new parent
 	const parent = sourceNode.parent;
 	parent.children = parent.children.filter((child) => child.name !== sourceNode.name);
 
@@ -67,4 +69,3 @@ export default {
 	execute: mv,
 	completions: allArgsFileCompletions
 };
-

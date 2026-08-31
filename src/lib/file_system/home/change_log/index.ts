@@ -9,26 +9,26 @@ const change_log: FileSystemNodeInput = {
 	name: 'change_log',
 	type: 'directory',
 	children: [
-    {
-      name: 'old.txt',
-      type: 'file',
-      content: old
-    },
-    {
-      name: 'dec_8_25.txt',
-      type: 'file',
-      content: dec_8_25
-    },
-    {
-      name: 'mar_2_26.txt',
-      type: 'file',
-      content: mar_2_26
-    },
-    {
-      name: 'may_26_26.txt',
-      type: 'file',
-      content: may_26_26
-    }
+		{
+			name: 'old.txt',
+			type: 'file',
+			content: old
+		},
+		{
+			name: 'dec_8_25.txt',
+			type: 'file',
+			content: dec_8_25
+		},
+		{
+			name: 'mar_2_26.txt',
+			type: 'file',
+			content: mar_2_26
+		},
+		{
+			name: 'may_26_26.txt',
+			type: 'file',
+			content: may_26_26
+		}
 	]
 };
 

@@ -1,10 +1,5 @@
 import { type SystemState } from '../system_state';
-import {
-	getFileNode,
-	getFilePath,
-	oneArgDirectoryCompletions,
-	resolvePath
-} from '../system';
+import { getFileNode, getFilePath, oneArgDirectoryCompletions, resolvePath } from '../system';
 
 import { textOutput, type CommandOutput } from '../command_output';
 

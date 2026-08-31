@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { FileContent } from '$lib/system_state';
-import FileContentRenderer from './FileContentRenderer.svelte';
+	import FileContentRenderer from './FileContentRenderer.svelte';
 
 	let {
 		contents,

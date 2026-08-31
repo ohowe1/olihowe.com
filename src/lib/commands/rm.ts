@@ -1,10 +1,5 @@
 import type { FileSystemNode, SystemState } from '$lib/system_state';
-import {
-	getFileNode,
-	getFilePath,
-	oneArgFileCompletions,
-	resolvePath
-} from '../system';
+import { getFileNode, getFilePath, oneArgFileCompletions, resolvePath } from '../system';
 
 import { textOutput, type CommandOutput } from '../command_output';
 

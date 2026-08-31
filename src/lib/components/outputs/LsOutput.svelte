@@ -23,11 +23,9 @@
 <div class="ls-output">
 	{#each children as child}
 		{#if !child.hidden}
-			<button
-				type="button"
-				class="ls-item {child.type}"
-				onclick={() => handleItemClick(child)}
-			>{child.name}</button>{" "}
+			<button type="button" class="ls-item {child.type}" onclick={() => handleItemClick(child)}
+				>{child.name}</button
+			>{' '}
 		{/if}
 	{/each}
 </div>

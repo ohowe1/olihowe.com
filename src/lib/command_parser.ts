@@ -65,7 +65,7 @@ const commands: Record<string, Command> = {
 	mkdir,
 	touch,
 	mv,
-	"export": export_
+	export: export_
 };
 
 function remakeTokens(tokens: string[][]): string {
@@ -293,9 +293,12 @@ function redirectToFile(
 		if (typeof fileNode.content === 'string' && typeof newContent === 'string') {
 			fileNode.content += newContent;
 		} else {
-			const contentsA = fileNode.content === ''
-				? []
-				: (Array.isArray(fileNode.content) ? fileNode.content : [fileNode.content]);
+			const contentsA =
+				fileNode.content === ''
+					? []
+					: Array.isArray(fileNode.content)
+						? fileNode.content
+						: [fileNode.content];
 			const contentsB = Array.isArray(newContent) ? newContent : [newContent];
 			fileNode.content = [...contentsA, ...contentsB];
 		}

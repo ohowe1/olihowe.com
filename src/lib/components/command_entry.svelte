@@ -30,5 +30,4 @@
 	.command-entry {
 		margin-bottom: 0.4rem;
 	}
-
 </style>

@@ -4,7 +4,7 @@ import { type CommandOutput, textOutput } from '../command_output';
 import LsOutput from '../components/outputs/LsOutput.svelte';
 
 function ls(args: string[], systemState: SystemState): CommandOutput {
-	const fileNode = resolvePath(args[0] ?? "", systemState);
+	const fileNode = resolvePath(args[0] ?? '', systemState);
 
 	if (!fileNode) {
 		return textOutput(`ls: no such file or directory: ${args[0]}`);
